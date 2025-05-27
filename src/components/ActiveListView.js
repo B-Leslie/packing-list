@@ -104,14 +104,14 @@ function ActiveListView({ list, allLists, onUpdateList, onOpenAddListModal, onGo
                 <div className="space-y-3 bg-slate-50 p-4 rounded-lg border border-slate-200">
                     <h3 className="text-lg font-semibold text-slate-700">Add New Item</h3>
                     <div className="flex gap-2">
-                        <input type="text" value={newItemName} onChange={(e) => setNewItemName(e.target.value)} placeholder="E.g., Passport" className="flex-grow p-2 border border-slate-300 rounded-md focus:ring-sky-500 focus:border-sky-500"/>
+                        <input type="text" value={newItemName} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddItem(); } }} lineonChange={(e) => setNewItemName(e.target.value)} placeholder="E.g., Passport" className="flex-grow p-2 border border-slate-300 rounded-md focus:ring-sky-500 focus:border-sky-500"/>
                         <button onClick={handleAddItem} className="bg-sky-500 hover:bg-sky-600 text-white font-medium py-2 px-4 rounded-md transition-colors">Add</button>
                     </div>
                 </div>
                 <div className="space-y-3 bg-slate-50 p-4 rounded-lg border border-slate-200">
                     <h3 className="text-lg font-semibold text-slate-700">Add New Category</h3>
                     <div className="flex gap-2">
-                        <input type="text" value={newCategoryName} onChange={(e) => setNewCategoryName(e.target.value)} placeholder="E.g., Toiletries" className="flex-grow p-2 border border-slate-300 rounded-md focus:ring-sky-500 focus:border-sky-500"/>
+                        <input type="text" value={newCategoryName} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddCategory(); } }} onChange={(e) => setNewCategoryName(e.target.value)} placeholder="E.g., Toiletries" className="flex-grow p-2 border border-slate-300 rounded-md focus:ring-sky-500 focus:border-sky-500"/>
                         <button onClick={handleAddCategory} className="bg-teal-500 hover:bg-teal-600 text-white font-medium py-2 px-4 rounded-md transition-colors">Add Category</button>
                     </div>
                 </div>
@@ -196,6 +196,7 @@ function ActiveListView({ list, allLists, onUpdateList, onOpenAddListModal, onGo
                                             <input
                                                 type="text"
                                                 value={itemForCategory.categoryId === itemOrCat.id ? itemForCategory.name : ''}
+					    onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddItemToCategory(itemOrCat.id); } }} 
                                                 onChange={(e) => setItemForCategory({ categoryId: itemOrCat.id, name: e.target.value })}
                                                 placeholder="Add item to this category"
                                                 className="flex-grow p-2 text-sm border border-slate-300 rounded-md focus:ring-sky-500 focus:border-sky-500"
