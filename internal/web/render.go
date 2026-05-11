@@ -8,6 +8,8 @@ import (
 	"html/template"
 	"io"
 	"strings"
+
+	"github.com/bejl/packing-list/internal/trips"
 )
 
 //go:embed templates/*.html templates/pages/*.html templates/partials/*.html
@@ -26,6 +28,15 @@ func NewRenderer() (*Renderer, error) {
 		"add":    func(a, b int) int { return a + b },
 		"isZero": func(v any) bool { return v == nil || v == "" || v == 0 },
 		"plus":   func(a, b int) int { return a + b },
+		"percent": func(a, b int) int {
+			if b == 0 {
+				return 0
+			}
+			return a * 100 / b
+		},
+		"packArgs": func(tripID string, row trips.Row) map[string]any {
+			return map[string]any{"TripID": tripID, "Row": row}
+		},
 	}
 
 	base := template.New("").Funcs(funcs)

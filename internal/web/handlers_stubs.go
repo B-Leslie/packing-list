@@ -4,12 +4,6 @@ import "net/http"
 
 func notImpl(w http.ResponseWriter, _ *http.Request) { w.WriteHeader(http.StatusNotImplemented) }
 
-func (s *Server) getTripsIndex(w http.ResponseWriter, r *http.Request)        { notImpl(w, r) }
-func (s *Server) getTripNew(w http.ResponseWriter, r *http.Request)           { notImpl(w, r) }
-func (s *Server) postTripCreate(w http.ResponseWriter, r *http.Request)       { notImpl(w, r) }
-func (s *Server) getTripDetail(w http.ResponseWriter, r *http.Request)        { notImpl(w, r) }
-func (s *Server) patchTrip(w http.ResponseWriter, r *http.Request)            { notImpl(w, r) }
-func (s *Server) deleteTrip(w http.ResponseWriter, r *http.Request)           { notImpl(w, r) }
 func (s *Server) attachBundle(w http.ResponseWriter, r *http.Request)         { notImpl(w, r) }
 func (s *Server) detachBundle(w http.ResponseWriter, r *http.Request)         { notImpl(w, r) }
 func (s *Server) addExtra(w http.ResponseWriter, r *http.Request)             { notImpl(w, r) }

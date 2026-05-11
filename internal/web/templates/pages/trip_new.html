@@ -1,0 +1,11 @@
+{{ define "content" }}
+<header><h1>New trip</h1></header>
+<form method="post" action="/trips">
+  <input type="hidden" name="csrf_token" value="__CSRF__" />
+  <label>Name <input name="name" required autofocus /></label>
+  <label>Nights <input name="nights" type="number" min="0" value="2" required /></label>
+  <button>Create</button>
+  <a href="/" class="secondary" role="button">Cancel</a>
+</form>
+{{ end }}
+{{ template "layout" . }}

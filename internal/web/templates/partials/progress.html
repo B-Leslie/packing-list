@@ -1,0 +1,4 @@
+{{ define "progress" }}
+<span style="width: {{ if eq .Total 0 }}0{{ else }}{{ percent .Packed .Total }}{{ end }}%"></span>
+<small style="display:block;margin-top:.25rem">{{ .Packed }} / {{ .Total }} packed</small>
+{{ end }}

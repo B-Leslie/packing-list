@@ -1,0 +1,14 @@
+{{ define "pack_row" }}
+<div class="pack-row{{ if .Row.Packed }} packed{{ end }}" id="pr-{{ .TripID }}-{{ .Row.ItemID }}">
+  <input type="checkbox" {{ if .Row.Packed }}checked{{ end }}
+         hx-post="/trips/{{ .TripID }}/pack/{{ .Row.ItemID }}"
+         hx-target="#pr-{{ .TripID }}-{{ .Row.ItemID }}" hx-swap="outerHTML"
+         name="packed" value="1" />
+  <div>{{ .Row.Name }} <small class="source">{{ range .Row.Sources }}{{ . }} {{ end }}</small></div>
+  <div>×{{ .Row.Qty }}</div>
+  <button class="outline" style="padding:.1rem .5rem"
+          hx-patch="/trips/{{ .TripID }}/items/{{ .Row.ItemID }}"
+          hx-vals='{"removed":"1"}' hx-target="#pr-{{ .TripID }}-{{ .Row.ItemID }}" hx-swap="outerHTML"
+          hx-confirm="Skip {{ .Row.Name }} this trip?">skip</button>
+</div>
+{{ end }}

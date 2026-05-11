@@ -1,0 +1,82 @@
+{{ define "content" }}
+<header>
+  <h1>{{ .Trip.Name }}</h1>
+  <p>{{ .Trip.Nights }} night{{ if ne .Trip.Nights 1 }}s{{ end }}</p>
+</header>
+
+<div class="progress-bar" id="progress">
+  {{ template "progress" .Progress }}
+</div>
+
+<section>
+  <h2>Bundles attached</h2>
+  <div id="bundle-chips">
+    {{ range .AttachedBundles }}
+      <span class="bundle-chip" id="tb-{{ $.Trip.ID }}-{{ .ID }}">
+        {{ .Name }}
+        <button hx-delete="/trips/{{ $.Trip.ID }}/bundles/{{ .ID }}"
+                hx-target="#tb-{{ $.Trip.ID }}-{{ .ID }}" hx-swap="outerHTML">×</button>
+      </span>
+    {{ end }}
+  </div>
+  <form hx-post="/trips/{{ .Trip.ID }}/bundles" hx-target="#bundle-chips" hx-swap="beforeend"
+        hx-on::after-request="if(event.detail.successful){htmx.ajax('GET','/trips/{{ .Trip.ID }}',{target:'main',swap:'innerHTML'})}">
+    <fieldset role="group">
+      <select name="bundle_id" required>
+        <option value="">— add a bundle —</option>
+        {{ range .AvailableBundles }}<option value="{{ .ID }}">{{ .Name }}</option>{{ end }}
+      </select>
+      <button>Add</button>
+    </fieldset>
+  </form>
+</section>
+
+<section>
+  <h2>Extras</h2>
+  <form hx-post="/trips/{{ .Trip.ID }}/extras"
+        hx-on::after-request="if(event.detail.successful){htmx.ajax('GET','/trips/{{ .Trip.ID }}',{target:'main',swap:'innerHTML'})}">
+    <fieldset role="group">
+      <select name="item_id" required>
+        <option value="">— add an extra item —</option>
+        {{ range .AllItems }}<option value="{{ .ID }}">{{ .Name }}</option>{{ end }}
+      </select>
+      <input name="qty" type="number" min="1" placeholder="qty" style="width:6rem" />
+      <button>Add</button>
+    </fieldset>
+  </form>
+</section>
+
+<section>
+  <h2>Packing list</h2>
+  {{ $tid := .Trip.ID }}
+  {{ $lastCat := "" }}
+  {{ range .Rows }}
+    {{ if ne .Category $lastCat }}
+      <div class="category-heading">{{ .Category }}</div>
+      {{ $lastCat = .Category }}
+    {{ end }}
+    {{ template "pack_row" (packArgs $tid .) }}
+  {{ end }}
+</section>
+
+<section>
+  <h2>Members</h2>
+  <ul>{{ range .Members }}
+    <li>{{ .Email }} ({{ .Role }})
+      {{ if ne .Role "owner" }}
+      <button class="outline" style="padding:.1rem .5rem"
+              hx-delete="/trips/{{ $.Trip.ID }}/members/{{ .UserID }}"
+              hx-target="closest li" hx-swap="outerHTML">remove</button>
+      {{ end }}
+    </li>
+  {{ end }}</ul>
+  <form hx-post="/trips/{{ .Trip.ID }}/members" hx-swap="none"
+        hx-on::after-request="if(event.detail.successful){htmx.ajax('GET','/trips/{{ .Trip.ID }}',{target:'main',swap:'innerHTML'})}">
+    <fieldset role="group">
+      <input name="email" type="email" placeholder="email to invite" required />
+      <button>Invite</button>
+    </fieldset>
+  </form>
+</section>
+{{ end }}
+{{ template "layout" . }}
