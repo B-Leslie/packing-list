@@ -1,0 +1,12 @@
+/data/
+/packing-list
+/packing-list.exe
+*.test
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+.session_secret
+.env
+.idea/
+.vscode/
