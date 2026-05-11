@@ -1,0 +1,8 @@
+{{ define "content" }}
+<article style="max-width:24rem;margin:3rem auto">
+  <header><h1>Check your inbox</h1></header>
+  <p>Sent a link to <strong>{{ .Email }}</strong>. It expires in 15 minutes.</p>
+  {{ if .DevLink }}<p><small>Dev: <a href="{{ .DevLink }}">{{ .DevLink }}</a></small></p>{{ end }}
+</article>
+{{ end }}
+{{ template "layout" . }}

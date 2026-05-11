@@ -1,0 +1,45 @@
+{{ define "layout" -}}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>{{ .Title }} · Packing List</title>
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
+<link rel="stylesheet" href="/static/pico.min.css" />
+<link rel="stylesheet" href="/static/app.css" />
+<script src="/static/htmx.min.js" defer></script>
+<meta name="htmx-config" content='{"includeIndicatorStyles":false}' />
+</head>
+<body hx-headers='{"X-CSRF-Token": "__CSRF__"}'>
+{{ if .User }}
+<nav class="app-bar">
+  <strong><a href="/" class="contrast">Packing List</a></strong>
+  <div class="grow"></div>
+  <a href="/items">Items</a>
+  <a href="/bundles">Bundles</a>
+  <a href="/trash">Trash</a>
+  <form method="post" action="/logout" style="display:inline;margin:0">
+    <input type="hidden" name="csrf_token" value="__CSRF__" />
+    <button class="outline" style="padding:.25rem .75rem">Sign out</button>
+  </form>
+</nav>
+{{ end }}
+<main class="container">
+{{ template "content" . }}
+</main>
+<script>
+  // Echo the csrf cookie into the hx-headers placeholder + any forms.
+  document.addEventListener("DOMContentLoaded", () => {
+    const m = document.cookie.match(/(?:^|; )csrf=([^;]+)/);
+    if (!m) return;
+    const tok = decodeURIComponent(m[1]);
+    document.querySelectorAll("[hx-headers]").forEach(el => {
+      el.setAttribute("hx-headers", el.getAttribute("hx-headers").replaceAll("__CSRF__", tok));
+    });
+    document.querySelectorAll("input[name=csrf_token]").forEach(el => el.value = tok);
+  });
+</script>
+</body>
+</html>
+{{- end }}
