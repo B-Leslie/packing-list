@@ -1,7 +1,6 @@
 package web
 
 import (
-	"embed"
 	"log/slog"
 	"net/http"
 	"time"
