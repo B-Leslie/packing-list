@@ -76,3 +76,62 @@ func (s *Sources) AttachedBundleIDs(ctx context.Context, tripID string) ([]strin
 	}
 	return out, rows.Err()
 }
+
+// Extra and Override are JSON-friendly views of trip-scoped data, exported so
+// the web layer can serialise them directly during /export.
+type Extra struct {
+	ItemID string `json:"item_id"`
+	Qty    *int   `json:"qty,omitempty"`
+}
+
+type Override struct {
+	ItemID  string `json:"item_id"`
+	Removed bool   `json:"removed,omitempty"`
+	Qty     *int   `json:"qty,omitempty"`
+}
+
+func (s *Sources) QueryExtras(ctx context.Context, tripID string) ([]Extra, error) {
+	rows, err := s.db.QueryContext(ctx, `SELECT item_id, qty FROM trip_extras WHERE trip_id = ?`, tripID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []Extra
+	for rows.Next() {
+		var e Extra
+		var q sql.NullInt64
+		if err := rows.Scan(&e.ItemID, &q); err != nil {
+			return nil, err
+		}
+		if q.Valid {
+			v := int(q.Int64)
+			e.Qty = &v
+		}
+		out = append(out, e)
+	}
+	return out, rows.Err()
+}
+
+func (s *Sources) QueryOverrides(ctx context.Context, tripID string) ([]Override, error) {
+	rows, err := s.db.QueryContext(ctx, `SELECT item_id, removed, qty_override FROM trip_overrides WHERE trip_id = ?`, tripID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []Override
+	for rows.Next() {
+		var ov Override
+		var rem int
+		var q sql.NullInt64
+		if err := rows.Scan(&ov.ItemID, &rem, &q); err != nil {
+			return nil, err
+		}
+		ov.Removed = rem != 0
+		if q.Valid {
+			v := int(q.Int64)
+			ov.Qty = &v
+		}
+		out = append(out, ov)
+	}
+	return out, rows.Err()
+}

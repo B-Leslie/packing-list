@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(New-Item -ItemType Directory -Path \"docs\\\\superpowers\\\\specs\" -Force)",
+      "Bash(export PATH=\"/c/Program Files/Go/bin:$PATH\")",
+      "Bash(go version *)",
+      "Bash(go get *)",
+      "Bash(go mod *)",
+      "Bash(git checkout *)",
+      "Bash(go env *)",
+      "PowerShell(go *)",
+      "PowerShell(cd \"C:\\\\Users\\\\bejl\\\\source\\\\repos\\\\packing-list\"; Get-Content go.mod; \"`n---GO.SUM---\"; \\(Get-Content go.sum -TotalCount 5\\) -join \"`n\")",
+      "PowerShell(go mod *)",
+      "PowerShell(cd \"C:\\\\Users\\\\bejl\\\\source\\\\repos\\\\packing-list\"; $sum = Get-Content go.sum; \"$\\($sum.Count\\) lines in go.sum\"; $sum | Select-Object -First 5)",
+      "PowerShell(cd \"C:\\\\Users\\\\bejl\\\\source\\\\repos\\\\packing-list\"; [System.IO.File]::ReadAllText\\(\"go.mod\"\\) | Write-Output)",
+      "PowerShell(cd \"C:\\\\Users\\\\bejl\\\\source\\\\repos\\\\packing-list\"; $content = [System.IO.File]::ReadAllText\\(\"go.mod\"\\); Write-Host \"File size: $\\($content.Length\\) bytes\"; Write-Host \"Content:\"; $content | Write-Output)",
+      "PowerShell(go build *)",
+      "PowerShell(go version *)",
+      "PowerShell(go test *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(go test *)",
+      "Bash(git -C C:\\\\Users\\\\bejl\\\\source\\\\repos\\\\packing-list log --oneline -20)",
+      "Bash(git -C C:\\\\Users\\\\bejl\\\\source\\\\repos\\\\packing-list status)",
+      "PowerShell(Select-String *)",
+      "Bash(go doc *)",
+      "Bash(go build *)"
+    ]
+  }
+}
