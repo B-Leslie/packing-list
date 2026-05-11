@@ -1,0 +1,10 @@
+{{ define "bundle_row" }}
+<tr id="bundle-{{ .ID }}">
+  <td><a href="/bundles/{{ .ID }}">{{ .Name }}</a></td>
+  <td>{{ .Description }}</td>
+  <td>
+    <button class="outline" hx-delete="/bundles/{{ .ID }}" hx-target="#bundle-{{ .ID }}"
+            hx-swap="outerHTML" hx-confirm="Move {{ .Name }} to Trash?">Delete</button>
+  </td>
+</tr>
+{{ end }}

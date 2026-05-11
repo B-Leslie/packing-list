@@ -1,0 +1,22 @@
+{{ define "content" }}
+<header>
+  <h1>Bundles</h1>
+  <p>Reusable groups of items. Bundles can also nest other bundles (cycles are rejected).</p>
+</header>
+
+<form hx-post="/bundles" hx-target="#bundle-rows" hx-swap="afterbegin" hx-on::after-request="this.reset()">
+  <fieldset role="group">
+    <input name="name" placeholder="Bundle name, e.g. washbag-basic" required />
+    <input name="description" placeholder="Short description (optional)" />
+    <button type="submit">Add</button>
+  </fieldset>
+</form>
+
+<table>
+  <thead><tr><th>Name</th><th>Description</th><th></th></tr></thead>
+  <tbody id="bundle-rows">
+    {{ range .Bundles }}{{ template "bundle_row" . }}{{ end }}
+  </tbody>
+</table>
+{{ end }}
+{{ template "layout" . }}

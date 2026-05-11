@@ -1,0 +1,8 @@
+{{ define "bundle_child_row" }}
+<li id="bc-{{ .ParentID }}-{{ .ChildID }}">
+  <a href="/bundles/{{ .ChildID }}">{{ .Name }}</a>
+  <button class="outline" style="padding:.1rem .5rem"
+          hx-delete="/bundles/{{ .ParentID }}/children/{{ .ChildID }}"
+          hx-target="#bc-{{ .ParentID }}-{{ .ChildID }}" hx-swap="outerHTML">×</button>
+</li>
+{{ end }}

@@ -1,0 +1,8 @@
+{{ define "bundle_item_row" }}
+<li id="bi-{{ .BundleID }}-{{ .ItemID }}">
+  {{ .Name }}{{ if .QtyShown }} × {{ .QtyShown }}{{ end }}
+  <button class="outline" style="padding:.1rem .5rem"
+          hx-delete="/bundles/{{ .BundleID }}/items/{{ .ItemID }}"
+          hx-target="#bi-{{ .BundleID }}-{{ .ItemID }}" hx-swap="outerHTML">×</button>
+</li>
+{{ end }}

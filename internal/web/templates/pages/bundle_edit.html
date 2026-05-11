@@ -1,0 +1,52 @@
+{{ define "content" }}
+<header>
+  <h1>{{ .Bundle.Name }}</h1>
+  <p><a href="/bundles">← all bundles</a></p>
+</header>
+
+<form hx-patch="/bundles/{{ .Bundle.ID }}" hx-swap="none">
+  <fieldset role="group">
+    <input name="name" value="{{ .Bundle.Name }}" required />
+    <input name="description" value="{{ .Bundle.Description }}" placeholder="Description" />
+    <button>Save</button>
+  </fieldset>
+</form>
+
+<section class="grid">
+  <div>
+    <h2>Items</h2>
+    <form hx-post="/bundles/{{ .Bundle.ID }}/items" hx-target="#bundle-items" hx-swap="afterbegin"
+          hx-on::after-request="this.reset()">
+      <fieldset role="group">
+        <select name="item_id" required>
+          <option value="">— pick an item —</option>
+          {{ range .AllItems }}<option value="{{ .ID }}">{{ .Name }}</option>{{ end }}
+        </select>
+        <input name="qty" type="number" placeholder="qty (blank = default)" style="width:8rem" />
+        <button>Add</button>
+      </fieldset>
+    </form>
+    <ul id="bundle-items">
+      {{ range .Items }}{{ template "bundle_item_row" . }}{{ end }}
+    </ul>
+  </div>
+
+  <div>
+    <h2>Nested bundles</h2>
+    <form hx-post="/bundles/{{ .Bundle.ID }}/children" hx-target="#bundle-children" hx-swap="afterbegin"
+          hx-on::after-request="this.reset()">
+      <fieldset role="group">
+        <select name="child_id" required>
+          <option value="">— pick a bundle —</option>
+          {{ range .NestableBundles }}<option value="{{ .ID }}">{{ .Name }}</option>{{ end }}
+        </select>
+        <button>Nest</button>
+      </fieldset>
+    </form>
+    <ul id="bundle-children">
+      {{ range .Children }}{{ template "bundle_child_row" . }}{{ end }}
+    </ul>
+  </div>
+</section>
+{{ end }}
+{{ template "layout" . }}
