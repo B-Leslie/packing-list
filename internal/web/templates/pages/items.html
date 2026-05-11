@@ -1,0 +1,26 @@
+{{ define "content" }}
+<header>
+  <h1>Items</h1>
+  <p>The shared catalog. Per-night items scale by trip nights; fixed items use the larger of the requested quantities.</p>
+</header>
+
+<form hx-post="/items" hx-target="#item-rows" hx-swap="afterbegin" hx-on::after-request="this.reset()">
+  <fieldset role="group">
+    <input name="name" placeholder="Name" required />
+    <input name="category" placeholder="Category" value="general" />
+    <input name="default_qty" type="number" min="1" value="1" style="width:6rem" />
+    <label style="display:inline-flex;align-items:center;gap:.25rem;margin:0 .5rem">
+      <input type="checkbox" name="per_night" value="1" /> per night
+    </label>
+    <button type="submit">Add</button>
+  </fieldset>
+</form>
+
+<table>
+  <thead><tr><th>Name</th><th>Category</th><th>Per night</th><th>Default qty</th><th></th></tr></thead>
+  <tbody id="item-rows">
+    {{ range .Items }}{{ template "item_row" . }}{{ end }}
+  </tbody>
+</table>
+{{ end }}
+{{ template "layout" . }}

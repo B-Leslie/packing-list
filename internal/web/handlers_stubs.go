@@ -17,10 +17,6 @@ func (s *Server) overrideItem(w http.ResponseWriter, r *http.Request)         { 
 func (s *Server) togglePack(w http.ResponseWriter, r *http.Request)           { notImpl(w, r) }
 func (s *Server) inviteMember(w http.ResponseWriter, r *http.Request)         { notImpl(w, r) }
 func (s *Server) removeMember(w http.ResponseWriter, r *http.Request)         { notImpl(w, r) }
-func (s *Server) listItems(w http.ResponseWriter, r *http.Request)            { notImpl(w, r) }
-func (s *Server) createItem(w http.ResponseWriter, r *http.Request)           { notImpl(w, r) }
-func (s *Server) updateItem(w http.ResponseWriter, r *http.Request)           { notImpl(w, r) }
-func (s *Server) deleteItem(w http.ResponseWriter, r *http.Request)           { notImpl(w, r) }
 func (s *Server) listBundles(w http.ResponseWriter, r *http.Request)          { notImpl(w, r) }
 func (s *Server) createBundle(w http.ResponseWriter, r *http.Request)         { notImpl(w, r) }
 func (s *Server) editBundle(w http.ResponseWriter, r *http.Request)           { notImpl(w, r) }

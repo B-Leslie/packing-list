@@ -1,0 +1,12 @@
+{{ define "item_row" }}
+<tr id="item-{{ .ID }}">
+  <td>{{ .Name }}</td>
+  <td>{{ .Category }}</td>
+  <td>{{ if .PerNight }}yes{{ else }}—{{ end }}</td>
+  <td>{{ .DefaultQty }}</td>
+  <td>
+    <button class="outline" hx-delete="/items/{{ .ID }}" hx-target="#item-{{ .ID }}" hx-swap="outerHTML"
+            hx-confirm="Move {{ .Name }} to Trash?">Delete</button>
+  </td>
+</tr>
+{{ end }}
