@@ -1,0 +1,43 @@
+{{ define "content" }}
+<header><h1>Trash</h1><p>Restore or permanently remove.</p></header>
+
+<section>
+  <h2>Items</h2>
+  {{ if not .Bin.Items }}<p><small>nothing here</small></p>{{ else }}
+  <ul>{{ range .Bin.Items }}
+    <li id="trash-item-{{ .ID }}">
+      {{ .Name }} — deleted {{ .DeletedAt.Time.Format "2006-01-02 15:04" }}
+      <button class="contrast" hx-post="/trash/item/{{ .ID }}/restore" hx-target="#trash-item-{{ .ID }}" hx-swap="outerHTML">Restore</button>
+      <button class="outline" hx-delete="/trash/item/{{ .ID }}" hx-target="#trash-item-{{ .ID }}" hx-swap="outerHTML"
+              hx-confirm="Purge {{ .Name }}? This cannot be undone.">Purge</button>
+    </li>
+  {{ end }}</ul>{{ end }}
+</section>
+
+<section>
+  <h2>Bundles</h2>
+  {{ if not .Bin.Bundles }}<p><small>nothing here</small></p>{{ else }}
+  <ul>{{ range .Bin.Bundles }}
+    <li id="trash-bundle-{{ .ID }}">
+      {{ .Name }} — deleted {{ .DeletedAt.Time.Format "2006-01-02 15:04" }}
+      <button class="contrast" hx-post="/trash/bundle/{{ .ID }}/restore" hx-target="#trash-bundle-{{ .ID }}" hx-swap="outerHTML">Restore</button>
+      <button class="outline" hx-delete="/trash/bundle/{{ .ID }}" hx-target="#trash-bundle-{{ .ID }}" hx-swap="outerHTML"
+              hx-confirm="Purge {{ .Name }}? This cannot be undone.">Purge</button>
+    </li>
+  {{ end }}</ul>{{ end }}
+</section>
+
+<section>
+  <h2>Trips</h2>
+  {{ if not .Bin.Trips }}<p><small>nothing here</small></p>{{ else }}
+  <ul>{{ range .Bin.Trips }}
+    <li id="trash-trip-{{ .ID }}">
+      {{ .Name }} — deleted {{ .DeletedAt.Time.Format "2006-01-02 15:04" }}
+      <button class="contrast" hx-post="/trash/trip/{{ .ID }}/restore" hx-target="#trash-trip-{{ .ID }}" hx-swap="outerHTML">Restore</button>
+      <button class="outline" hx-delete="/trash/trip/{{ .ID }}" hx-target="#trash-trip-{{ .ID }}" hx-swap="outerHTML"
+              hx-confirm="Purge {{ .Name }}? This cannot be undone.">Purge</button>
+    </li>
+  {{ end }}</ul>{{ end }}
+</section>
+{{ end }}
+{{ template "layout" . }}
