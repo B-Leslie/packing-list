@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"io/fs"
 	"strings"
 
 	"github.com/bejl/packing-list/internal/trips"
@@ -16,7 +17,15 @@ import (
 var templatesFS embed.FS
 
 //go:embed static
-var staticFS embed.FS
+var staticEmbed embed.FS
+
+var staticFS = func() fs.FS {
+	f, err := fs.Sub(staticEmbed, "static")
+	if err != nil {
+		panic(err)
+	}
+	return f
+}()
 
 type Renderer struct {
 	pages    map[string]*template.Template
@@ -83,4 +92,4 @@ func (r *Renderer) Partial(w io.Writer, name string, data any) error {
 }
 
 // StaticFS returns the embedded /static FS for use with http.FileServer.
-func StaticFS() embed.FS { return staticFS }
+func (r *Renderer) StaticFS() fs.FS { return staticFS }

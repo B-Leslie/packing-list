@@ -2,6 +2,7 @@ package web
 
 import (
 	"log/slog"
+	"mime"
 	"net/http"
 	"time"
 
@@ -11,6 +12,12 @@ import (
 	"github.com/bejl/packing-list/internal/trash"
 	"github.com/bejl/packing-list/internal/trips"
 )
+
+func init() {
+	mime.AddExtensionType(".css", "text/css")
+	mime.AddExtensionType(".js", "text/javascript")
+	mime.AddExtensionType(".svg", "image/svg+xml")
+}
 
 // Server bundles all dependencies for HTTP handlers.
 type Server struct {
