@@ -1,8 +1,8 @@
 # Packing List Implementation Plan
 
-## Progress (as of 2026-05-11)
+## Progress (as of 2026-05-12)
 
-Executing via `superpowers:subagent-driven-development`. Tasks 1–17 committed; Task 18 (CSRF) files exist on disk but are **uncommitted**; Tasks 19–35 not started.
+All 35 tasks committed. Plan complete.
 
 | Task | Summary | Commit |
 | ---- | ------- | ------ |
@@ -14,7 +14,7 @@ Executing via `superpowers:subagent-driven-development`. Tasks 1–17 committed;
 | 6 | Items CRUD | `0448157` |
 | 7 | Bundles + cycle-checked nesting | `a107cd3` |
 | 8 | Trips + members | `d38c4b3` |
-| 9 | Render engine (14 table-driven tests) | `6d9ff49` |
+| 9 | Render engine | `6d9ff49` |
 | 10 | Pack toggle | `96bf4b1` |
 | 11 | Trash aggregator | `083e996` |
 | 12 | Users find-or-create | `62c1597` |
@@ -23,11 +23,28 @@ Executing via `superpowers:subagent-driven-development`. Tasks 1–17 committed;
 | 15 | HMAC-signed sessions | `8505706` |
 | 16 | Session-secret bootstrap | `f0d010e` |
 | 17 | RequireUser middleware | `f57b132` |
-| 18 | **CSRF middleware — files written, uncommitted (`internal/auth/csrf.go`, `csrf_test.go`)** | — |
-| 19 | Login rate limiter | — |
-| 20 – 35 | Static assets, templates, web server scaffold, all HTTP handlers, main.go, seed, Dockerfile, README | — |
+| 18 | CSRF middleware | `c8b742c` |
+| 19 | Rate limiter | `5d51268` |
+| 20 | Vendor Pico + HTMX + app overlay | `44e5938` |
+| 21 | Layout + login templates | `c10e686` |
+| 22 | Template renderer | `b38fb08` |
+| 23 | Server scaffold + route table | `f6b5541` |
+| 24 | Auth handlers | `9574b59` |
+| 25 | Items handlers | `483ea17` |
+| 26 | Bundles handlers | `d1aecb5` |
+| 27 | Trips list/create/detail | `4aa826d` |
+| 28 | Trip source handlers | `37cd999` |
+| 29 | Trip members handlers | `23c6985` |
+| 30 | Trash page | `3f1bed8` |
+| 31 | JSON export / import | `70e6b09` |
+| 32 | Main entrypoint | `2cb63eb` |
+| 33 | Seed command | `4366248` |
+| 34 | Dockerfile + multi-stage build | `8dda717` |
+| 35 | README + manual verification | `7a02565` |
 
-**Resume:** Run `git status` to confirm Task 18 files; then dispatch a subagent for Task 18 (verify tests pass, commit with message `feat(auth): CSRF middleware (cookie + header/form double-submit)`). Continue from Task 19.
+**Notes on Task 34:** The Dockerfile in the plan body (golang 1.23-alpine, no pre-created `/data` dir) was extended in commit `8dda717` to (a) use `golang:1.26-alpine` to match `go.mod`'s `go 1.26.3` directive and (b) `mkdir /out/data` in the builder + `COPY --chown=nonroot:nonroot /out/data /data` in the runtime stage so named-volume mounts inherit nonroot ownership (without this the container exits with `open /data/.session_secret: permission denied`). Image size 34.5 MB (plan target was <30 MB; the extra is from bundling the `seed` binary alongside `packing-list`).
+
+**Resume:** Plan execution finished. Outstanding human work is the manual verification checklist in `README.md` against a freshly-built image.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
