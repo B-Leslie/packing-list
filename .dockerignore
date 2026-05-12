@@ -1,0 +1,16 @@
+.git
+.gitignore
+.idea
+.vscode
+data/
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+*.test
+packing-list
+packing-list.exe
+seed
+seed.exe
+docs/
+README.md
