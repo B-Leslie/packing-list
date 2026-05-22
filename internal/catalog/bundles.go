@@ -22,7 +22,7 @@ type Bundle struct {
 type BundleItem struct {
 	BundleID string
 	ItemID   string
-	Qty      sql.NullInt64
+	Qty      sql.NullFloat64
 }
 
 type Bundles struct{ db *sql.DB }
@@ -154,7 +154,7 @@ func (r *Bundles) Purge(ctx context.Context, id string) error {
 	return tx.Commit()
 }
 
-func (r *Bundles) AddItem(ctx context.Context, bundleID, itemID string, qty *int) error {
+func (r *Bundles) AddItem(ctx context.Context, bundleID, itemID string, qty *float64) error {
 	var q any = nil
 	if qty != nil {
 		q = *qty

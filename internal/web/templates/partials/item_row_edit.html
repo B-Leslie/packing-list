@@ -1,0 +1,22 @@
+{{ define "item_row_edit" }}
+<tr id="item-{{ .ID }}">
+  <td colspan="5" style="padding: 0;">
+    <form hx-patch="/items/{{ .ID }}" hx-target="#item-{{ .ID }}" hx-swap="outerHTML" style="margin: 0; padding: 0.5rem; background-color: rgba(66, 133, 244, 0.04);">
+      <div style="display: grid; grid-template-columns: 1fr 1fr auto auto auto; gap: 0.5rem; align-items: center;">
+        <input name="name" value="{{ .Name }}" required style="margin: 0; font-size: 0.9rem;" />
+        <input name="category" value="{{ .Category }}" style="margin: 0; font-size: 0.9rem;" />
+        <input name="default_qty" type="number" step="any" min="0" value="{{ formatQty .DefaultQty }}" style="margin: 0; width: 5rem; font-size: 0.9rem;" />
+        <label style="display: flex; align-items: center; gap: 0.25rem; margin: 0; font-size: 0.9rem;">
+          <input type="checkbox" name="per_night" value="1" {{ if .PerNight }}checked{{ end }} />
+          <span>Per night</span>
+        </label>
+        <div style="display: flex; gap: 0.25rem;">
+          <button type="submit" style="margin: 0; padding: 0.2rem 0.5rem; font-size: 0.8rem;">Save</button>
+          <button type="button" class="outline" style="margin: 0; padding: 0.2rem 0.5rem; font-size: 0.8rem; border-color: #dadce0;"
+                  hx-get="/items" hx-target="main" hx-swap="innerHTML">Cancel</button>
+        </div>
+      </div>
+    </form>
+  </td>
+</tr>
+{{ end }}

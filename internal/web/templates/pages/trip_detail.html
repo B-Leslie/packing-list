@@ -1,82 +1,110 @@
 {{ define "content" }}
 <header>
-  <h1>{{ .Trip.Name }}</h1>
-  <p>{{ .Trip.Nights }} night{{ if ne .Trip.Nights 1 }}s{{ end }}</p>
+  <nav aria-label="breadcrumb" style="margin-bottom: 0.5rem;">
+    <ul>
+      <li><a href="/">Trips</a></li>
+      <li>{{ .Trip.Name }}</li>
+    </ul>
+  </nav>
+  <div style="display: flex; justify-content: space-between; align-items: start;">
+    <div>
+      <h1>{{ .Trip.Name }}</h1>
+      <p style="color: var(--pico-muted-color);">{{ .Trip.Nights }} night{{ if ne .Trip.Nights 1 }}s{{ end }}</p>
+    </div>
+    <div id="progress" style="width: 200px;">
+      {{ template "progress" .Progress }}
+    </div>
+  </div>
 </header>
 
-<div class="progress-bar" id="progress">
-  {{ template "progress" .Progress }}
-</div>
-
-<section>
-  <h2>Bundles attached</h2>
-  <div id="bundle-chips">
-    {{ range .AttachedBundles }}
-      <span class="bundle-chip" id="tb-{{ $.Trip.ID }}-{{ .ID }}">
-        {{ .Name }}
-        <button hx-delete="/trips/{{ $.Trip.ID }}/bundles/{{ .ID }}"
-                hx-target="#tb-{{ $.Trip.ID }}-{{ .ID }}" hx-swap="outerHTML">×</button>
-      </span>
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+  <div class="card" style="padding: 1.5rem;">
+    <h2 style="font-size: 1.25rem; margin-top: 0;">Packing list</h2>
+    {{ $tid := .Trip.ID }}
+    {{ $lastCat := "" }}
+    {{ range .Rows }}
+      {{ if ne .Category $lastCat }}
+        <div class="category-heading">{{ .Category }}</div>
+        {{ $lastCat = .Category }}
+      {{ end }}
+      {{ template "pack_row" (packArgs $tid .) }}
+    {{ end }}
+    {{ if not .Rows }}
+      <div class="empty-state" style="padding: 2rem;">
+        <p>Your packing list is empty. Add some bundles or extras!</p>
+      </div>
     {{ end }}
   </div>
-  <form hx-post="/trips/{{ .Trip.ID }}/bundles" hx-target="#bundle-chips" hx-swap="beforeend"
-        hx-on::after-request="if(event.detail.successful){htmx.ajax('GET','/trips/{{ .Trip.ID }}',{target:'main',swap:'innerHTML'})}">
-    <fieldset role="group">
-      <select name="bundle_id" required>
-        <option value="">— add a bundle —</option>
-        {{ range .AvailableBundles }}<option value="{{ .ID }}">{{ .Name }}</option>{{ end }}
-      </select>
-      <button>Add</button>
-    </fieldset>
-  </form>
-</section>
 
-<section>
-  <h2>Extras</h2>
-  <form hx-post="/trips/{{ .Trip.ID }}/extras"
-        hx-on::after-request="if(event.detail.successful){htmx.ajax('GET','/trips/{{ .Trip.ID }}',{target:'main',swap:'innerHTML'})}">
-    <fieldset role="group">
-      <select name="item_id" required>
-        <option value="">— add an extra item —</option>
-        {{ range .AllItems }}<option value="{{ .ID }}">{{ .Name }}</option>{{ end }}
-      </select>
-      <input name="qty" type="number" min="1" placeholder="qty" style="width:6rem" />
-      <button>Add</button>
-    </fieldset>
-  </form>
-</section>
+  <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+    <div class="card" style="padding: 1rem;">
+      <h2 style="font-size: 1rem; margin-top: 0;">Bundles</h2>
+      <div id="bundle-chips" style="margin-bottom: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem;">
+        {{ range .AttachedBundles }}
+          <span class="bundle-chip" id="tb-{{ $.Trip.ID }}-{{ .ID }}" style="margin: 0;">
+            {{ .Name }}
+            <button class="icon-btn" style="padding: 0 !important; height: 16px; width: 16px;"
+                    hx-delete="/trips/{{ $.Trip.ID }}/bundles/{{ .ID }}"
+                    hx-target="#tb-{{ $.Trip.ID }}-{{ .ID }}" hx-swap="outerHTML">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width: 12px; height: 12px;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+          </span>
+        {{ end }}
+      </div>
+      <form hx-post="/trips/{{ .Trip.ID }}/bundles" hx-target="#bundle-chips" hx-swap="beforeend"
+            hx-on::after-request="if(event.detail.successful){htmx.ajax('GET','/trips/{{ .Trip.ID }}',{target:'main',swap:'innerHTML'})}">
+        <div style="display: flex; gap: 0.5rem;">
+          <select name="bundle_id" required style="margin: 0; font-size: 0.9rem;">
+            <option value="">+ Add bundle</option>
+            {{ range .AvailableBundles }}<option value="{{ .ID }}">{{ .Name }}</option>{{ end }}
+          </select>
+          <button style="margin: 0; padding: 0.25rem 0.75rem;">Add</button>
+        </div>
+      </form>
+    </div>
 
-<section>
-  <h2>Packing list</h2>
-  {{ $tid := .Trip.ID }}
-  {{ $lastCat := "" }}
-  {{ range .Rows }}
-    {{ if ne .Category $lastCat }}
-      <div class="category-heading">{{ .Category }}</div>
-      {{ $lastCat = .Category }}
-    {{ end }}
-    {{ template "pack_row" (packArgs $tid .) }}
-  {{ end }}
-</section>
+    <div class="card" style="padding: 1rem;">
+      <h2 style="font-size: 1rem; margin-top: 0;">Extras</h2>
+      <form hx-post="/trips/{{ .Trip.ID }}/extras"
+            hx-on::after-request="if(event.detail.successful){htmx.ajax('GET','/trips/{{ .Trip.ID }}',{target:'main',swap:'innerHTML'})}">
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+          <select name="item_id" required style="margin: 0; font-size: 0.9rem;">
+            <option value="">+ Add extra item</option>
+            {{ range .AllItems }}<option value="{{ .ID }}">{{ .Name }}</option>{{ end }}
+          </select>
+          <div style="display: flex; gap: 0.5rem;">
+            <input name="qty" type="number" step="any" min="0" placeholder="qty" style="margin: 0; font-size: 0.9rem;" />
+            <button style="margin: 0; padding: 0.25rem 0.75rem;">Add</button>
+          </div>
+        </div>
+      </form>
+    </div>
 
-<section>
-  <h2>Members</h2>
-  <ul>{{ range .Members }}
-    <li>{{ .Email }} ({{ .Role }})
-      {{ if ne .Role "owner" }}
-      <button class="outline" style="padding:.1rem .5rem"
-              hx-delete="/trips/{{ $.Trip.ID }}/members/{{ .UserID }}"
-              hx-target="closest li" hx-swap="outerHTML">remove</button>
-      {{ end }}
-    </li>
-  {{ end }}</ul>
-  <form hx-post="/trips/{{ .Trip.ID }}/members" hx-swap="none"
-        hx-on::after-request="if(event.detail.successful){htmx.ajax('GET','/trips/{{ .Trip.ID }}',{target:'main',swap:'innerHTML'})}">
-    <fieldset role="group">
-      <input name="email" type="email" placeholder="email to invite" required />
-      <button>Invite</button>
-    </fieldset>
-  </form>
-</section>
+    <div class="card" style="padding: 1rem;">
+      <h2 style="font-size: 1rem; margin-top: 0;">Members</h2>
+      <ul style="list-style: none; padding: 0; margin-bottom: 1rem; font-size: 0.9rem;">
+        {{ range .Members }}
+          <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.25rem 0;">
+            <span>{{ .Email }} <small style="color: #70757a; margin-left: 0.25rem;">({{ .Role }})</small></span>
+            {{ if ne .Role "owner" }}
+            <button class="icon-btn delete-btn" title="Remove Member"
+                    hx-delete="/trips/{{ $.Trip.ID }}/members/{{ .UserID }}"
+                    hx-target="closest li" hx-swap="outerHTML">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            </button>
+            {{ end }}
+          </li>
+        {{ end }}
+      </ul>
+      <form hx-post="/trips/{{ .Trip.ID }}/members" hx-swap="none"
+            hx-on::after-request="if(event.detail.successful){htmx.ajax('GET','/trips/{{ .Trip.ID }}',{target:'main',swap:'innerHTML'})}">
+        <div style="display: flex; gap: 0.5rem;">
+          <input name="email" type="email" placeholder="Email" required style="margin: 0; font-size: 0.9rem;" />
+          <button style="margin: 0; padding: 0.25rem 0.75rem;">Invite</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 {{ end }}
 {{ template "layout" . }}

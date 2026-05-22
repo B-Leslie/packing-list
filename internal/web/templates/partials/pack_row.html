@@ -1,14 +1,17 @@
 {{ define "pack_row" }}
 <div class="pack-row{{ if .Row.Packed }} packed{{ end }}" id="pr-{{ .TripID }}-{{ .Row.ItemID }}">
   <input type="checkbox" {{ if .Row.Packed }}checked{{ end }}
+         style="margin: 0; width: 1.25rem; height: 1.25rem;"
          hx-post="/trips/{{ .TripID }}/pack/{{ .Row.ItemID }}"
          hx-target="#pr-{{ .TripID }}-{{ .Row.ItemID }}" hx-swap="outerHTML"
          name="packed" value="1" />
-  <div>{{ .Row.Name }} <small class="source">{{ range .Row.Sources }}{{ . }} {{ end }}</small></div>
-  <div>×{{ .Row.Qty }}</div>
-  <button class="outline" style="padding:.1rem .5rem"
+  <div style="font-size: 0.95rem;">{{ .Row.Name }} <small class="source">{{ range .Row.Sources }}{{ . }} {{ end }}</small></div>
+  <div style="font-weight: 500;">×{{ formatQty .Row.Qty }}</div>
+  <button class="icon-btn delete-btn" title="Skip this trip"
           hx-patch="/trips/{{ .TripID }}/items/{{ .Row.ItemID }}"
           hx-vals='{"removed":"1"}' hx-target="#pr-{{ .TripID }}-{{ .Row.ItemID }}" hx-swap="outerHTML"
-          hx-confirm="Skip {{ .Row.Name }} this trip?">skip</button>
+          hx-confirm="Skip {{ .Row.Name }} this trip?">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+  </button>
 </div>
 {{ end }}

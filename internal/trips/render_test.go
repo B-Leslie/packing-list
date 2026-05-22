@@ -9,7 +9,7 @@ import (
 
 // helpers ---------------------------------------------------------------------
 
-func intp(v int) *int { return &v }
+func floatp(v float64) *float64 { return &v }
 
 type fixture struct {
 	t    *testing.T
@@ -49,7 +49,7 @@ type anyDB = interface {
 // the catalog package — render is the unit under test, not catalog.)
 
 // addItem inserts an item directly.
-func (h *renderHelper) addItem(id, name, cat string, perNight bool, defQty int) {
+func (h *renderHelper) addItem(id, name, cat string, perNight bool, defQty float64) {
 	h.t.Helper()
 	per := 0
 	if perNight {
@@ -82,7 +82,7 @@ func (h *renderHelper) softDeleteBundle(id string) {
 	}
 }
 
-func (h *renderHelper) bundleItem(bundle, item string, qty *int) {
+func (h *renderHelper) bundleItem(bundle, item string, qty *float64) {
 	h.t.Helper()
 	var q any
 	if qty != nil {
@@ -156,8 +156,8 @@ func TestRenderFixedItemTakesMaxAcrossBundles(t *testing.T) {
 	h.addItem("i_tw", "Towel", "general", false, 1)
 	h.addBundle("b_a", "a")
 	h.addBundle("b_b", "b")
-	h.bundleItem("b_a", "i_tw", intp(1))
-	h.bundleItem("b_b", "i_tw", intp(2)) // bigger qty wins for fixed items
+	h.bundleItem("b_a", "i_tw", floatp(1))
+	h.bundleItem("b_b", "i_tw", floatp(2)) // bigger qty wins for fixed items
 	h.attach(trip, "b_a")
 	h.attach(trip, "b_b")
 
@@ -172,8 +172,8 @@ func TestRenderPerNightSumsAcrossBundles(t *testing.T) {
 	h.addItem("i_s", "Socks", "clothing", true, 1)
 	h.addBundle("b_a", "a")
 	h.addBundle("b_b", "b")
-	h.bundleItem("b_a", "i_s", intp(1)) // 1 per night
-	h.bundleItem("b_b", "i_s", intp(1)) // 1 per night
+	h.bundleItem("b_a", "i_s", floatp(1)) // 1 per night
+	h.bundleItem("b_b", "i_s", floatp(1)) // 1 per night
 	h.attach(trip, "b_a")
 	h.attach(trip, "b_b")
 
@@ -209,7 +209,7 @@ func TestRenderOverrideForcesQty(t *testing.T) {
 	h.attach(trip, "b")
 
 	srcs := NewSources(h.render.db)
-	srcs.SetOverride(context.Background(), trip, "i_u", false, intp(2)) // force qty=2 regardless of nights
+	srcs.SetOverride(context.Background(), trip, "i_u", false, floatp(2)) // force qty=2 regardless of nights
 
 	list, _ := h.render.Render(context.Background(), trip)
 	if len(list) != 1 || list[0].Qty != 2 {

@@ -85,9 +85,9 @@ func (s *Server) importJSON(w http.ResponseWriter, r *http.Request) {
 			s.Bundles.Create(r.Context(), b.Bundle)
 		}
 		for _, bi := range b.Items {
-			var qp *int
+			var qp *float64
 			if bi.Qty.Valid {
-				v := int(bi.Qty.Int64)
+				v := bi.Qty.Float64
 				qp = &v
 			}
 			s.Bundles.AddItem(r.Context(), b.ID, bi.ItemID, qp)

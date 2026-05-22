@@ -1,4 +1,11 @@
 {{ define "progress" }}
-<span style="width: {{ if eq .Total 0 }}0{{ else }}{{ percent .Packed .Total }}{{ end }}%"></span>
-<small style="display:block;margin-top:.25rem">{{ .Packed }} / {{ .Total }} packed</small>
+<div class="progress-container">
+  <div class="progress-bar">
+    <span style="width: {{ if eq .Total 0 }}0{{ else }}{{ percent .Packed .Total }}{{ end }}%"></span>
+  </div>
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.25rem;">
+    <small style="color: #5f6368; font-weight: 500;">{{ percent .Packed .Total }}%</small>
+    <small style="color: #5f6368;">{{ .Packed }} / {{ .Total }}</small>
+  </div>
+</div>
 {{ end }}

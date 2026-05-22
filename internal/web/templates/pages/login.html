@@ -1,15 +1,29 @@
 {{ define "content" }}
-<article style="max-width:24rem;margin:3rem auto">
-  <header><h1>Sign in</h1></header>
-  {{ if .Error }}<p style="color:var(--pico-color-red-550)">{{ .Error }}</p>{{ end }}
-  <form method="post" action="/login">
-    <input type="hidden" name="csrf_token" value="__CSRF__" />
-    <label>Email
-      <input type="email" name="email" required autocomplete="email" autofocus />
-    </label>
-    <button type="submit">Send magic link</button>
-  </form>
-  <small>We'll email you a link that signs you in. No password.</small>
-</article>
+<div style="display: flex; justify-content: center; align-items: center; min-height: 60vh;">
+  <div class="card" style="max-width: 400px; width: 100%; padding: 2rem;">
+    <header style="margin-bottom: 1.5rem;">
+      <h1 style="font-size: 1.5rem; margin: 0;">Sign in</h1>
+      <p style="font-size: 0.9rem; color: #5f6368; margin-top: 0.5rem;">Access your packing lists</p>
+    </header>
+
+    {{ if .Error }}
+      <p style="color: #d93025; background: #fce8e6; padding: 0.75rem; border-radius: 4px; font-size: 0.85rem;">{{ .Error }}</p>
+    {{ end }}
+
+    <form method="post" action="/login">
+      <input type="hidden" name="csrf_token" value="__CSRF__" />
+      <div style="margin-bottom: 1rem;">
+        <label style="font-size: 0.9rem; font-weight: 500;">Email address
+          <input type="email" name="email" required autocomplete="email" autofocus style="margin-top: 0.25rem;" placeholder="you@example.com" />
+        </label>
+      </div>
+      <button type="submit" style="width: 100%; margin-top: 1rem;">Send magic link</button>
+    </form>
+
+    <p style="font-size: 0.8rem; color: #5f6368; margin-top: 1.5rem; text-align: center;">
+      We'll email you a link that signs you in instantly. No password required.
+    </p>
+  </div>
+</div>
 {{ end }}
 {{ template "layout" . }}

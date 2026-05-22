@@ -24,7 +24,12 @@
       "Bash(git -C C:\\\\Users\\\\bejl\\\\source\\\\repos\\\\packing-list status)",
       "PowerShell(Select-String *)",
       "Bash(go doc *)",
-      "Bash(go build *)"
+      "Bash(go build *)",
+      "Bash(docker build *)",
+      "Bash(docker run *)",
+      "Bash(docker rm *)",
+      "Bash(docker volume *)",
+      "Bash(curl -fsS http://localhost:18080/healthz)"
     ]
   }
 }

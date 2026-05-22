@@ -1,11 +1,29 @@
 {{ define "content" }}
-<header><h1>New trip</h1></header>
-<form method="post" action="/trips">
-  <input type="hidden" name="csrf_token" value="__CSRF__" />
-  <label>Name <input name="name" required autofocus /></label>
-  <label>Nights <input name="nights" type="number" min="0" value="2" required /></label>
-  <button>Create</button>
-  <a href="/" class="secondary" role="button">Cancel</a>
-</form>
+<div style="max-width: 600px; margin: 0 auto;">
+  <header>
+    <h1>New trip</h1>
+    <p>Plan your next adventure.</p>
+  </header>
+
+  <div class="card" style="padding: 2rem;">
+    <form method="post" action="/trips">
+      <input type="hidden" name="csrf_token" value="__CSRF__" />
+      <div style="margin-bottom: 1.5rem;">
+        <label style="font-weight: 500;">Trip Name
+          <input name="name" required autofocus placeholder="e.g. Summer in Tuscany" style="margin-top: 0.5rem;" />
+        </label>
+      </div>
+      <div style="margin-bottom: 1.5rem;">
+        <label style="font-weight: 500;">Number of Nights
+          <input name="nights" type="number" min="0" value="2" required style="margin-top: 0.5rem;" />
+        </label>
+      </div>
+      <div style="display: flex; gap: 1rem; align-items: center;">
+        <button type="submit" style="margin: 0;">Create Trip</button>
+        <a href="/" class="secondary" role="button" style="margin: 0; background: transparent; border: none; color: #5f6368;">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
 {{ end }}
 {{ template "layout" . }}

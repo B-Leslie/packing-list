@@ -70,11 +70,13 @@ func (s *Server) Handler() http.Handler {
 
 	authed.HandleFunc("GET /items", s.listItems)
 	authed.HandleFunc("POST /items", s.createItem)
+	authed.HandleFunc("GET /items/{id}/edit", s.editItem)
 	authed.HandleFunc("PATCH /items/{id}", s.updateItem)
 	authed.HandleFunc("DELETE /items/{id}", s.deleteItem)
 
 	authed.HandleFunc("GET /bundles", s.listBundles)
 	authed.HandleFunc("POST /bundles", s.createBundle)
+	authed.HandleFunc("GET /bundles/{id}/contents", s.getBundleContents)
 	authed.HandleFunc("GET /bundles/{id}", s.editBundle)
 	authed.HandleFunc("PATCH /bundles/{id}", s.updateBundle)
 	authed.HandleFunc("DELETE /bundles/{id}", s.deleteBundle)

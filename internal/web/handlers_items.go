@@ -23,7 +23,7 @@ func (s *Server) listItems(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) createItem(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
-	qty, _ := strconv.Atoi(r.FormValue("default_qty"))
+	qty, _ := strconv.ParseFloat(r.FormValue("default_qty"), 64)
 	if qty <= 0 {
 		qty = 1
 	}
@@ -43,10 +43,20 @@ func (s *Server) createItem(w http.ResponseWriter, r *http.Request) {
 	s.Renderer.Partial(w, "item_row", created)
 }
 
+func (s *Server) editItem(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	it, err := s.Items.Get(r.Context(), id)
+	if err != nil {
+		http.Error(w, "not found", 404)
+		return
+	}
+	s.Renderer.Partial(w, "item_row_edit", it)
+}
+
 func (s *Server) updateItem(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	r.ParseForm()
-	qty, _ := strconv.Atoi(r.FormValue("default_qty"))
+	qty, _ := strconv.ParseFloat(r.FormValue("default_qty"), 64)
 	if qty <= 0 {
 		qty = 1
 	}

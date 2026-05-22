@@ -1,12 +1,23 @@
 {{ define "content" }}
-<header>
-  <h1>Trips</h1>
-  <a class="contrast" role="button" href="/trips/new">New trip</a>
-</header>
+<div class="quick-add">
+  <form hx-post="/trips" hx-target="main" style="display:flex;width:100%;align-items:center;gap:1rem">
+    <input name="name" placeholder="Quickly create a new trip..." required style="flex:1" />
+    <input type="hidden" name="nights" value="1" />
+    <button class="outline" style="padding:.25rem .75rem;margin:0">Create</button>
+  </form>
+</div>
+
 {{ if not .Trips }}
-  <p>No trips yet. <a href="/trips/new">Create your first one.</a></p>
+  <div class="empty-state">
+    <div class="icon">🧳</div>
+    <h2>No trips yet</h2>
+    <p>Your upcoming adventures will appear here.</p>
+    <a href="/trips/new" role="button">Create your first trip</a>
+  </div>
 {{ else }}
-<ul>{{ range .Trips }}{{ template "trip_row" . }}{{ end }}</ul>
+  <div class="card-grid">
+    {{ range .Trips }}{{ template "trip_row" . }}{{ end }}
+  </div>
 {{ end }}
 {{ end }}
 {{ template "layout" . }}

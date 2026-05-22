@@ -8,6 +8,7 @@ import (
 	"html/template"
 	"io"
 	"io/fs"
+	"strconv"
 	"strings"
 
 	"github.com/bejl/packing-list/internal/trips"
@@ -42,6 +43,9 @@ func NewRenderer() (*Renderer, error) {
 				return 0
 			}
 			return a * 100 / b
+		},
+		"formatQty": func(v float64) string {
+			return strconv.FormatFloat(v, 'f', -1, 64)
 		},
 		"packArgs": func(tripID string, row trips.Row) map[string]any {
 			return map[string]any{"TripID": tripID, "Row": row}

@@ -41,9 +41,9 @@ func (s *Server) addExtra(w http.ResponseWriter, r *http.Request) {
 	}
 	r.ParseForm()
 	iID := r.FormValue("item_id")
-	var qtyPtr *int
+	var qtyPtr *float64
 	if v := r.FormValue("qty"); v != "" {
-		if n, err := strconv.Atoi(v); err == nil && n > 0 {
+		if n, err := strconv.ParseFloat(v, 64); err == nil && n > 0 {
 			qtyPtr = &n
 		}
 	}
@@ -63,9 +63,9 @@ func (s *Server) overrideItem(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	iID := r.PathValue("iid")
 	removed := r.FormValue("removed") == "1"
-	var qtyPtr *int
+	var qtyPtr *float64
 	if v := r.FormValue("qty"); v != "" {
-		if n, err := strconv.Atoi(v); err == nil && n > 0 {
+		if n, err := strconv.ParseFloat(v, 64); err == nil && n > 0 {
 			qtyPtr = &n
 		}
 	}

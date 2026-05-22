@@ -1,10 +1,23 @@
 {{ define "bundle_row" }}
-<tr id="bundle-{{ .ID }}">
-  <td><a href="/bundles/{{ .ID }}">{{ .Name }}</a></td>
-  <td>{{ .Description }}</td>
+<tr id="bundle-row-{{ .ID }}-main">
   <td>
-    <button class="outline" hx-delete="/bundles/{{ .ID }}" hx-target="#bundle-{{ .ID }}"
-            hx-swap="outerHTML" hx-confirm="Move {{ .Name }} to Trash?">Delete</button>
+    <div style="display: flex; align-items: center;">
+      <button class="icon-btn" style="margin-right: 0.25rem;" 
+              hx-get="/bundles/{{ .ID }}/contents" hx-target="#bundle-row-{{ .ID }}-expand" hx-swap="afterend"
+              hx-on:click="this.setAttribute('disabled', 'true'); this.style.opacity = '0.5'; this.innerHTML = '<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><polyline points=\'6 9 12 15 18 9\'></polyline></svg>'">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+      <a href="/bundles/{{ .ID }}" style="font-weight: 500;">{{ .Name }}</a>
+    </div>
+  </td>
+  <td>{{ .Description }}</td>
+  <td style="text-align: right;">
+    <button class="icon-btn delete-btn" title="Delete"
+            hx-delete="/bundles/{{ .ID }}" hx-target="#bundle-row-{{ .ID }}-main"
+            hx-swap="outerHTML" hx-confirm="Move {{ .Name }} to Trash?">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+    </button>
   </td>
 </tr>
+<tr id="bundle-row-{{ .ID }}-expand" style="display: none;"></tr>
 {{ end }}

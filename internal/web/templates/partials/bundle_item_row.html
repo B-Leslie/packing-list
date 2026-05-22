@@ -1,8 +1,10 @@
 {{ define "bundle_item_row" }}
-<li id="bi-{{ .BundleID }}-{{ .ItemID }}">
-  {{ .Name }}{{ if .QtyShown }} × {{ .QtyShown }}{{ end }}
-  <button class="outline" style="padding:.1rem .5rem"
+<li id="bi-{{ .BundleID }}-{{ .ItemID }}" style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.75rem; border-bottom: 1px solid #f1f3f4;">
+  <span style="font-size: 0.95rem;">{{ .Name }}{{ if .QtyShown }} <small style="color: #5f6368; margin-left: 0.5rem; font-family: 'Roboto Mono', monospace;">×{{ formatQty .QtyShown }}</small>{{ end }}</span>
+  <button class="icon-btn delete-btn" title="Remove"
           hx-delete="/bundles/{{ .BundleID }}/items/{{ .ItemID }}"
-          hx-target="#bi-{{ .BundleID }}-{{ .ItemID }}" hx-swap="outerHTML">×</button>
+          hx-target="#bi-{{ .BundleID }}-{{ .ItemID }}" hx-swap="outerHTML">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+  </button>
 </li>
 {{ end }}

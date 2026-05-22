@@ -1,23 +1,50 @@
 {{ define "content" }}
 <header>
   <h1>Items</h1>
-  <p>The shared catalog. Per-night items scale by trip nights; fixed items use the larger of the requested quantities.</p>
+  <p>The shared catalog of things you might pack.</p>
 </header>
 
-<form hx-post="/items" hx-target="#item-rows" hx-swap="afterbegin" hx-on::after-request="this.reset()">
-  <fieldset role="group">
-    <input name="name" placeholder="Name" required />
-    <input name="category" placeholder="Category" value="general" />
-    <input name="default_qty" type="number" min="1" value="1" style="width:6rem" />
-    <label style="display:inline-flex;align-items:center;gap:.25rem;margin:0 .5rem">
-      <input type="checkbox" name="per_night" value="1" /> per night
-    </label>
-    <button type="submit">Add</button>
-  </fieldset>
-</form>
+<div class="card" style="margin-bottom: 2rem; padding: 1.5rem;">
+  <form hx-post="/items" hx-target="#item-rows" hx-swap="afterbegin" hx-on::after-request="this.reset()">
+    <div style="display: grid; grid-template-columns: 1fr 1fr auto auto auto; gap: 1rem; align-items: end;">
+      <div>
+        <label>Name
+          <input name="name" placeholder="e.g. Toothbrush" required />
+        </label>
+      </div>
+      <div>
+        <label>Category
+          <input name="category" placeholder="e.g. Toiletries" value="general" />
+        </label>
+      </div>
+      <div>
+        <label>Qty
+          <input name="default_qty" type="number" step="any" min="0" value="1" />
+        </label>
+      </div>
+      <div style="padding-bottom: 0.75rem;">
+        <label style="display: flex; align-items: center; gap: 0.5rem; margin: 0;">
+          <input type="checkbox" name="per_night" value="1" />
+          <span>Per night</span>
+        </label>
+      </div>
+      <div style="padding-bottom: 0.25rem;">
+        <button type="submit" style="margin: 0;">Add Item</button>
+      </div>
+    </div>
+  </form>
+</div>
 
 <table>
-  <thead><tr><th>Name</th><th>Category</th><th>Per night</th><th>Default qty</th><th></th></tr></thead>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Category</th>
+      <th class="text-center">Per night</th>
+      <th class="text-right">Default qty</th>
+      <th style="width: 80px;"></th>
+    </tr>
+  </thead>
   <tbody id="item-rows">
     {{ range .Items }}{{ template "item_row" . }}{{ end }}
   </tbody>

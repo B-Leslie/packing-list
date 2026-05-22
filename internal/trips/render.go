@@ -11,7 +11,7 @@ type Row struct {
 	ItemID   string
 	Name     string
 	Category string
-	Qty      int
+	Qty      float64
 	PerNight bool
 	Sources  []string // unique source bundle names plus possibly "extras"
 	Packed   bool
@@ -36,7 +36,7 @@ func (r *Renderer) Render(ctx context.Context, tripID string) ([]Row, error) {
 	}
 
 	type srcEntry struct {
-		qty      int
+		qty      float64
 		perNight bool
 		source   string
 	}
@@ -67,7 +67,7 @@ func (r *Renderer) Render(ctx context.Context, tripID string) ([]Row, error) {
 		}
 		for rows.Next() {
 			var bID, iID, name, cat string
-			var qty int
+			var qty float64
 			var per int
 			if err := rows.Scan(&bID, &iID, &qty, &name, &cat, &per); err != nil {
 				rows.Close()
@@ -96,7 +96,8 @@ func (r *Renderer) Render(ctx context.Context, tripID string) ([]Row, error) {
 		}
 		for rows.Next() {
 			var iID, name, cat string
-			var qty, per int
+			var qty float64
+			var per int
 			if err := rows.Scan(&iID, &qty, &name, &cat, &per); err != nil {
 				rows.Close()
 				return nil, err
@@ -116,7 +117,7 @@ func (r *Renderer) Render(ctx context.Context, tripID string) ([]Row, error) {
 	// 5. Overrides.
 	overrides := map[string]struct {
 		removed     bool
-		qtyOverride sql.NullInt64
+		qtyOverride sql.NullFloat64
 	}{}
 	{
 		rows, err := r.db.QueryContext(ctx,
@@ -127,14 +128,14 @@ func (r *Renderer) Render(ctx context.Context, tripID string) ([]Row, error) {
 		for rows.Next() {
 			var iID string
 			var rem int
-			var qo sql.NullInt64
+			var qo sql.NullFloat64
 			if err := rows.Scan(&iID, &rem, &qo); err != nil {
 				rows.Close()
 				return nil, err
 			}
 			overrides[iID] = struct {
 				removed     bool
-				qtyOverride sql.NullInt64
+				qtyOverride sql.NullFloat64
 			}{rem != 0, qo}
 		}
 		rows.Close()
@@ -193,13 +194,13 @@ func (r *Renderer) Render(ctx context.Context, tripID string) ([]Row, error) {
 
 		// Quantity: max for fixed items, sum * nights for per-night items.
 		if meta.PerNight {
-			sum := 0
+			var sum float64
 			for _, e := range entries {
 				sum += e.qty
 			}
-			row.Qty = sum * nights
+			row.Qty = sum * float64(nights)
 		} else {
-			max := 0
+			var max float64
 			for _, e := range entries {
 				if e.qty > max {
 					max = e.qty
@@ -210,7 +211,7 @@ func (r *Renderer) Render(ctx context.Context, tripID string) ([]Row, error) {
 
 		// Apply qty override last.
 		if ov, ok := overrides[iID]; ok && ov.qtyOverride.Valid {
-			row.Qty = int(ov.qtyOverride.Int64)
+			row.Qty = ov.qtyOverride.Float64
 		}
 
 		out = append(out, row)

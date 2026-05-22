@@ -21,7 +21,7 @@ func (s *Sources) DetachBundle(ctx context.Context, tripID, bundleID string) err
 	return err
 }
 
-func (s *Sources) AddExtra(ctx context.Context, tripID, itemID string, qty *int) error {
+func (s *Sources) AddExtra(ctx context.Context, tripID, itemID string, qty *float64) error {
 	var q any = nil
 	if qty != nil {
 		q = *qty
@@ -38,7 +38,7 @@ func (s *Sources) RemoveExtra(ctx context.Context, tripID, itemID string) error 
 	return err
 }
 
-func (s *Sources) SetOverride(ctx context.Context, tripID, itemID string, removed bool, qty *int) error {
+func (s *Sources) SetOverride(ctx context.Context, tripID, itemID string, removed bool, qty *float64) error {
 	var q any = nil
 	if qty != nil {
 		q = *qty
@@ -80,14 +80,14 @@ func (s *Sources) AttachedBundleIDs(ctx context.Context, tripID string) ([]strin
 // Extra and Override are JSON-friendly views of trip-scoped data, exported so
 // the web layer can serialise them directly during /export.
 type Extra struct {
-	ItemID string `json:"item_id"`
-	Qty    *int   `json:"qty,omitempty"`
+	ItemID string   `json:"item_id"`
+	Qty    *float64 `json:"qty,omitempty"`
 }
 
 type Override struct {
-	ItemID  string `json:"item_id"`
-	Removed bool   `json:"removed,omitempty"`
-	Qty     *int   `json:"qty,omitempty"`
+	ItemID  string   `json:"item_id"`
+	Removed bool     `json:"removed,omitempty"`
+	Qty     *float64 `json:"qty,omitempty"`
 }
 
 func (s *Sources) QueryExtras(ctx context.Context, tripID string) ([]Extra, error) {
@@ -99,12 +99,12 @@ func (s *Sources) QueryExtras(ctx context.Context, tripID string) ([]Extra, erro
 	var out []Extra
 	for rows.Next() {
 		var e Extra
-		var q sql.NullInt64
+		var q sql.NullFloat64
 		if err := rows.Scan(&e.ItemID, &q); err != nil {
 			return nil, err
 		}
 		if q.Valid {
-			v := int(q.Int64)
+			v := q.Float64
 			e.Qty = &v
 		}
 		out = append(out, e)
@@ -122,13 +122,13 @@ func (s *Sources) QueryOverrides(ctx context.Context, tripID string) ([]Override
 	for rows.Next() {
 		var ov Override
 		var rem int
-		var q sql.NullInt64
+		var q sql.NullFloat64
 		if err := rows.Scan(&ov.ItemID, &rem, &q); err != nil {
 			return nil, err
 		}
 		ov.Removed = rem != 0
 		if q.Valid {
-			v := int(q.Int64)
+			v := q.Float64
 			ov.Qty = &v
 		}
 		out = append(out, ov)

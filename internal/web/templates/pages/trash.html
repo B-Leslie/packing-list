@@ -1,43 +1,75 @@
 {{ define "content" }}
-<header><h1>Trash</h1><p>Restore or permanently remove.</p></header>
+<header>
+  <h1>Trash</h1>
+  <p>Items, bundles, and trips you've deleted. Restore them or remove them forever.</p>
+</header>
 
-<section>
-  <h2>Items</h2>
-  {{ if not .Bin.Items }}<p><small>nothing here</small></p>{{ else }}
-  <ul>{{ range .Bin.Items }}
-    <li id="trash-item-{{ .ID }}">
-      {{ .Name }} — deleted {{ .DeletedAt.Time.Format "2006-01-02 15:04" }}
-      <button class="contrast" hx-post="/trash/item/{{ .ID }}/restore" hx-target="#trash-item-{{ .ID }}" hx-swap="outerHTML">Restore</button>
-      <button class="outline" hx-delete="/trash/item/{{ .ID }}" hx-target="#trash-item-{{ .ID }}" hx-swap="outerHTML"
-              hx-confirm="Purge {{ .Name }}? This cannot be undone.">Purge</button>
-    </li>
-  {{ end }}</ul>{{ end }}
-</section>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+  <div class="card" style="padding: 1.5rem;">
+    <h2 style="font-size: 1.1rem; margin-top: 0;">Items</h2>
+    {{ if not .Bin.Items }}
+      <p style="font-size: 0.9rem; color: #5f6368;">Empty</p>
+    {{ else }}
+      <ul style="list-style: none; padding: 0;">
+        {{ range .Bin.Items }}
+          <li id="trash-item-{{ .ID }}" style="margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #f1f3f4;">
+            <div style="font-weight: 500;">{{ .Name }}</div>
+            <div style="font-size: 0.75rem; color: #5f6368; margin-bottom: 0.5rem;">Deleted {{ .DeletedAt.Time.Format "Jan 02, 15:04" }}</div>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="outline" style="padding: 0.15rem 0.5rem; font-size: 0.75rem; margin: 0; border-color: #dadce0;" hx-post="/trash/item/{{ .ID }}/restore" hx-target="#trash-item-{{ .ID }}" hx-swap="outerHTML">Restore</button>
+              <button class="icon-btn delete-btn" title="Purge Forever" hx-delete="/trash/item/{{ .ID }}" hx-target="#trash-item-{{ .ID }}" hx-swap="outerHTML" hx-confirm="Purge {{ .Name }}? This cannot be undone.">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              </button>
+            </div>
+          </li>
+        {{ end }}
+      </ul>
+    {{ end }}
+  </div>
 
-<section>
-  <h2>Bundles</h2>
-  {{ if not .Bin.Bundles }}<p><small>nothing here</small></p>{{ else }}
-  <ul>{{ range .Bin.Bundles }}
-    <li id="trash-bundle-{{ .ID }}">
-      {{ .Name }} — deleted {{ .DeletedAt.Time.Format "2006-01-02 15:04" }}
-      <button class="contrast" hx-post="/trash/bundle/{{ .ID }}/restore" hx-target="#trash-bundle-{{ .ID }}" hx-swap="outerHTML">Restore</button>
-      <button class="outline" hx-delete="/trash/bundle/{{ .ID }}" hx-target="#trash-bundle-{{ .ID }}" hx-swap="outerHTML"
-              hx-confirm="Purge {{ .Name }}? This cannot be undone.">Purge</button>
-    </li>
-  {{ end }}</ul>{{ end }}
-</section>
+  <div class="card" style="padding: 1.5rem;">
+    <h2 style="font-size: 1.1rem; margin-top: 0;">Bundles</h2>
+    {{ if not .Bin.Bundles }}
+      <p style="font-size: 0.9rem; color: #5f6368;">Empty</p>
+    {{ else }}
+      <ul style="list-style: none; padding: 0;">
+        {{ range .Bin.Bundles }}
+          <li id="trash-bundle-{{ .ID }}" style="margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #f1f3f4;">
+            <div style="font-weight: 500;">{{ .Name }}</div>
+            <div style="font-size: 0.75rem; color: #5f6368; margin-bottom: 0.5rem;">Deleted {{ .DeletedAt.Time.Format "Jan 02, 15:04" }}</div>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="outline" style="padding: 0.15rem 0.5rem; font-size: 0.75rem; margin: 0; border-color: #dadce0;" hx-post="/trash/bundle/{{ .ID }}/restore" hx-target="#trash-bundle-{{ .ID }}" hx-swap="outerHTML">Restore</button>
+              <button class="icon-btn delete-btn" title="Purge Forever" hx-delete="/trash/bundle/{{ .ID }}" hx-target="#trash-bundle-{{ .ID }}" hx-swap="outerHTML" hx-confirm="Purge {{ .Name }}? This cannot be undone.">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              </button>
+            </div>
+          </li>
+        {{ end }}
+      </ul>
+    {{ end }}
+  </div>
 
-<section>
-  <h2>Trips</h2>
-  {{ if not .Bin.Trips }}<p><small>nothing here</small></p>{{ else }}
-  <ul>{{ range .Bin.Trips }}
-    <li id="trash-trip-{{ .ID }}">
-      {{ .Name }} — deleted {{ .DeletedAt.Time.Format "2006-01-02 15:04" }}
-      <button class="contrast" hx-post="/trash/trip/{{ .ID }}/restore" hx-target="#trash-trip-{{ .ID }}" hx-swap="outerHTML">Restore</button>
-      <button class="outline" hx-delete="/trash/trip/{{ .ID }}" hx-target="#trash-trip-{{ .ID }}" hx-swap="outerHTML"
-              hx-confirm="Purge {{ .Name }}? This cannot be undone.">Purge</button>
-    </li>
-  {{ end }}</ul>{{ end }}
-</section>
+  <div class="card" style="padding: 1.5rem;">
+    <h2 style="font-size: 1.1rem; margin-top: 0;">Trips</h2>
+    {{ if not .Bin.Trips }}
+      <p style="font-size: 0.9rem; color: #5f6368;">Empty</p>
+    {{ else }}
+      <ul style="list-style: none; padding: 0;">
+        {{ range .Bin.Trips }}
+          <li id="trash-trip-{{ .ID }}" style="margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #f1f3f4;">
+            <div style="font-weight: 500;">{{ .Name }}</div>
+            <div style="font-size: 0.75rem; color: #5f6368; margin-bottom: 0.5rem;">Deleted {{ .DeletedAt.Time.Format "Jan 02, 15:04" }}</div>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="outline" style="padding: 0.15rem 0.5rem; font-size: 0.75rem; margin: 0; border-color: #dadce0;" hx-post="/trash/trip/{{ .ID }}/restore" hx-target="#trash-trip-{{ .ID }}" hx-swap="outerHTML">Restore</button>
+              <button class="icon-btn delete-btn" title="Purge Forever" hx-delete="/trash/trip/{{ .ID }}" hx-target="#trash-trip-{{ .ID }}" hx-swap="outerHTML" hx-confirm="Purge {{ .Name }}? This cannot be undone.">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              </button>
+            </div>
+          </li>
+        {{ end }}
+      </ul>
+    {{ end }}
+  </div>
+</div>
 {{ end }}
 {{ template "layout" . }}

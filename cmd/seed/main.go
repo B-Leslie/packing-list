@@ -23,7 +23,7 @@ type item struct {
 	name       string
 	category   string
 	perNight   bool
-	defaultQty int
+	defaultQty float64
 }
 
 type bundle struct {
@@ -34,7 +34,7 @@ type bundle struct {
 
 type bundleItem struct {
 	itemKey string
-	qty     *int // nil = default
+	qty     *float64 // nil = default
 }
 
 func main() {

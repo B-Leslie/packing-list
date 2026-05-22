@@ -1,52 +1,69 @@
 {{ define "content" }}
 <header>
+  <nav aria-label="breadcrumb" style="margin-bottom: 0.5rem;">
+    <ul>
+      <li><a href="/bundles">Bundles</a></li>
+      <li>{{ .Bundle.Name }}</li>
+    </ul>
+  </nav>
   <h1>{{ .Bundle.Name }}</h1>
-  <p><a href="/bundles">← all bundles</a></p>
 </header>
 
-<form hx-patch="/bundles/{{ .Bundle.ID }}" hx-swap="none">
-  <fieldset role="group">
-    <input name="name" value="{{ .Bundle.Name }}" required />
-    <input name="description" value="{{ .Bundle.Description }}" placeholder="Description" />
-    <button>Save</button>
-  </fieldset>
-</form>
+<div class="card" style="margin-bottom: 2rem; padding: 1.5rem;">
+  <form hx-patch="/bundles/{{ .Bundle.ID }}" hx-swap="none">
+    <div style="display: grid; grid-template-columns: 1fr 2fr auto; gap: 1rem; align-items: end;">
+      <div>
+        <label>Bundle Name
+          <input name="name" value="{{ .Bundle.Name }}" required />
+        </label>
+      </div>
+      <div>
+        <label>Description
+          <input name="description" value="{{ .Bundle.Description }}" placeholder="Description" />
+        </label>
+      </div>
+      <div style="padding-bottom: 0.25rem;">
+        <button style="margin: 0;">Save Changes</button>
+      </div>
+    </div>
+  </form>
+</div>
 
-<section class="grid">
-  <div>
-    <h2>Items</h2>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+  <div class="card" style="padding: 1.5rem;">
+    <h2 style="font-size: 1.25rem; margin-top: 0;">Items in this bundle</h2>
     <form hx-post="/bundles/{{ .Bundle.ID }}/items" hx-target="#bundle-items" hx-swap="afterbegin"
-          hx-on::after-request="this.reset()">
-      <fieldset role="group">
-        <select name="item_id" required>
-          <option value="">— pick an item —</option>
+          hx-on::after-request="this.reset()" style="margin-bottom: 1.5rem;">
+      <div style="display: flex; gap: 0.5rem;">
+        <select name="item_id" required style="margin: 0;">
+          <option value="">+ Add item</option>
           {{ range .AllItems }}<option value="{{ .ID }}">{{ .Name }}</option>{{ end }}
         </select>
-        <input name="qty" type="number" placeholder="qty (blank = default)" style="width:8rem" />
-        <button>Add</button>
-      </fieldset>
+        <input name="qty" type="number" step="any" min="0" placeholder="qty" style="width:6rem; margin: 0;" />
+        <button style="margin: 0;">Add</button>
+      </div>
     </form>
-    <ul id="bundle-items">
+    <ul id="bundle-items" style="list-style: none; padding: 0;">
       {{ range .Items }}{{ template "bundle_item_row" . }}{{ end }}
     </ul>
   </div>
 
-  <div>
-    <h2>Nested bundles</h2>
+  <div class="card" style="padding: 1.5rem;">
+    <h2 style="font-size: 1.25rem; margin-top: 0;">Nested bundles</h2>
     <form hx-post="/bundles/{{ .Bundle.ID }}/children" hx-target="#bundle-children" hx-swap="afterbegin"
-          hx-on::after-request="this.reset()">
-      <fieldset role="group">
-        <select name="child_id" required>
-          <option value="">— pick a bundle —</option>
+          hx-on::after-request="this.reset()" style="margin-bottom: 1.5rem;">
+      <div style="display: flex; gap: 0.5rem;">
+        <select name="child_id" required style="margin: 0;">
+          <option value="">+ Nest another bundle</option>
           {{ range .NestableBundles }}<option value="{{ .ID }}">{{ .Name }}</option>{{ end }}
         </select>
-        <button>Nest</button>
-      </fieldset>
+        <button style="margin: 0;">Nest</button>
+      </div>
     </form>
-    <ul id="bundle-children">
+    <ul id="bundle-children" style="list-style: none; padding: 0;">
       {{ range .Children }}{{ template "bundle_child_row" . }}{{ end }}
     </ul>
   </div>
-</section>
+</div>
 {{ end }}
 {{ template "layout" . }}

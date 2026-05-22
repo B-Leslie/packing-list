@@ -21,7 +21,7 @@ type Item struct {
 	Name       string
 	Category   string
 	PerNight   bool
-	DefaultQty int
+	DefaultQty float64
 	Notes      string
 	CreatedBy  string
 	CreatedAt  time.Time

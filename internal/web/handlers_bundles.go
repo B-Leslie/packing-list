@@ -13,7 +13,7 @@ type bundleItemView struct {
 	BundleID string
 	ItemID   string
 	Name     string
-	QtyShown int // 0 means "default"
+	QtyShown float64 // 0 means "default"
 }
 
 type bundleChildView struct {
@@ -32,6 +32,44 @@ func (s *Server) listBundles(w http.ResponseWriter, r *http.Request) {
 		"Title":   "Bundles",
 		"User":    auth.UserFrom(r.Context()),
 		"Bundles": bs,
+	})
+}
+
+func (s *Server) getBundleContents(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	bItems, _ := s.Bundles.Items(r.Context(), id)
+	childIDs, _ := s.Bundles.Children(r.Context(), id)
+
+	items, _ := s.Items.List(r.Context())
+	itemNames := map[string]string{}
+	for _, it := range items {
+		itemNames[it.ID] = it.Name
+	}
+
+	rows := make([]bundleItemView, 0, len(bItems))
+	for _, bi := range bItems {
+		row := bundleItemView{BundleID: id, ItemID: bi.ItemID, Name: itemNames[bi.ItemID]}
+		if bi.Qty.Valid {
+			row.QtyShown = bi.Qty.Float64
+		}
+		rows = append(rows, row)
+	}
+
+	allBundles, _ := s.Bundles.List(r.Context())
+	bundleNames := map[string]string{}
+	for _, b := range allBundles {
+		bundleNames[b.ID] = b.Name
+	}
+
+	childRows := make([]bundleChildView, 0, len(childIDs))
+	for _, c := range childIDs {
+		childRows = append(childRows, bundleChildView{ParentID: id, ChildID: c, Name: bundleNames[c]})
+	}
+
+	s.Renderer.Partial(w, "bundle_contents", map[string]any{
+		"ID":       id,
+		"Items":    rows,
+		"Children": childRows,
 	})
 }
 
@@ -69,7 +107,7 @@ func (s *Server) editBundle(w http.ResponseWriter, r *http.Request) {
 	for _, bi := range bItems {
 		row := bundleItemView{BundleID: id, ItemID: bi.ItemID, Name: itemNames[bi.ItemID]}
 		if bi.Qty.Valid {
-			row.QtyShown = int(bi.Qty.Int64)
+			row.QtyShown = bi.Qty.Float64
 		}
 		rows = append(rows, row)
 	}
@@ -128,9 +166,9 @@ func (s *Server) bundleAddItem(w http.ResponseWriter, r *http.Request) {
 	bID := r.PathValue("id")
 	r.ParseForm()
 	iID := r.FormValue("item_id")
-	var qtyPtr *int
+	var qtyPtr *float64
 	if v := r.FormValue("qty"); v != "" {
-		n, err := strconv.Atoi(v)
+		n, err := strconv.ParseFloat(v, 64)
 		if err == nil && n > 0 {
 			qtyPtr = &n
 		}
