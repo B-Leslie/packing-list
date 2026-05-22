@@ -51,10 +51,17 @@ func main() {
 
 	users := auth.NewUsers(db)
 
-	// Bootstrap: ensure BOOTSTRAP_EMAIL exists if provided.
+	// Bootstrap: ensure BOOTSTRAP_EMAIL + ALLOWED_EMAILS rows exist.
+	// /login uses Find (not FindOrCreate), so anyone whose email isn't
+	// pre-seeded here can't sign in via the public form. Trip-member
+	// invites from existing users still create rows independently.
+	bootstrapEmails := append([]string{}, cfg.AllowedEmails...)
 	if cfg.BootstrapEmail != "" {
-		if _, _, err := users.FindOrCreate(context.Background(), cfg.BootstrapEmail); err != nil {
-			logger.Warn("bootstrap user", "err", err)
+		bootstrapEmails = append(bootstrapEmails, cfg.BootstrapEmail)
+	}
+	for _, e := range bootstrapEmails {
+		if _, _, err := users.FindOrCreate(context.Background(), e); err != nil {
+			logger.Warn("bootstrap user", "email", e, "err", err)
 		}
 	}
 

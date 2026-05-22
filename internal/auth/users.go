@@ -44,6 +44,24 @@ func (u *Users) FindOrCreate(ctx context.Context, email string) (string, bool, e
 	return id, true, nil
 }
 
+// Find returns (id, found, err) without creating a row. Use for login
+// gates so unknown emails do NOT silently provision accounts.
+func (u *Users) Find(ctx context.Context, email string) (string, bool, error) {
+	email = strings.TrimSpace(email)
+	if email == "" {
+		return "", false, errors.New("email required")
+	}
+	var id string
+	err := u.db.QueryRowContext(ctx, `SELECT id FROM users WHERE email = ? AND deleted_at IS NULL`, email).Scan(&id)
+	if errors.Is(err, sql.ErrNoRows) {
+		return "", false, nil
+	}
+	if err != nil {
+		return "", false, err
+	}
+	return id, true, nil
+}
+
 func (u *Users) Get(ctx context.Context, id string) (User, error) {
 	var usr User
 	err := u.db.QueryRowContext(ctx, `SELECT id,email FROM users WHERE id = ? AND deleted_at IS NULL`, id).Scan(&usr.ID, &usr.Email)

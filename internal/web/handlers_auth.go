@@ -24,18 +24,26 @@ func (s *Server) postLogin(w http.ResponseWriter, r *http.Request) {
 		s.Renderer.Render(w, "login", map[string]any{"Title": "Sign in", "Error": "Too many attempts. Try again later."})
 		return
 	}
-	if _, _, err := s.Users.FindOrCreate(r.Context(), email); err != nil {
-		s.Logger.Error("findOrCreate", "err", err)
+	// Invite-only: never auto-create on /login. Unknown emails still get
+	// the "check your inbox" page so the response shape doesn't leak
+	// which addresses are allowed. No magic link is actually issued.
+	_, found, err := s.Users.Find(r.Context(), email)
+	if err != nil {
+		s.Logger.Error("find user", "err", err)
 		s.Renderer.Render(w, "login", map[string]any{"Title": "Sign in", "Error": "Could not start sign-in"})
 		return
 	}
-	if err := s.Magic.Issue(r.Context(), email); err != nil {
-		s.Logger.Error("issue magic link", "err", err)
-		s.Renderer.Render(w, "login", map[string]any{"Title": "Sign in", "Error": "Could not send sign-in email"})
-		return
+	if found {
+		if err := s.Magic.Issue(r.Context(), email); err != nil {
+			s.Logger.Error("issue magic link", "err", err)
+			s.Renderer.Render(w, "login", map[string]any{"Title": "Sign in", "Error": "Could not send sign-in email"})
+			return
+		}
+	} else {
+		s.Logger.Info("login attempt for unknown email", "email", email)
 	}
 	data := map[string]any{"Title": "Check inbox", "Email": email}
-	if s.IsDev {
+	if s.IsDev && found {
 		data["DevLink"] = "(see server log)"
 	}
 	s.Renderer.Render(w, "login_sent", data)
@@ -48,9 +56,12 @@ func (s *Server) getVerify(w http.ResponseWriter, r *http.Request) {
 		s.Renderer.Render(w, "login", map[string]any{"Title": "Sign in", "Error": "Link is invalid or expired"})
 		return
 	}
-	uid, _, err := s.Users.FindOrCreate(r.Context(), email)
-	if err != nil {
-		s.Logger.Error("findOrCreate on verify", "err", err)
+	// Defense-in-depth: even if a token was minted for an unknown email
+	// (shouldn't happen -- postLogin gates on Find), require the user
+	// to exist at consumption time.
+	uid, found, err := s.Users.Find(r.Context(), email)
+	if err != nil || !found {
+		s.Logger.Error("find on verify", "err", err, "found", found)
 		s.Renderer.Render(w, "login", map[string]any{"Title": "Sign in", "Error": "Could not finish sign-in"})
 		return
 	}

@@ -4,6 +4,7 @@ package config
 import (
 	"errors"
 	"net/url"
+	"strings"
 )
 
 type SMTP struct {
@@ -22,6 +23,12 @@ type Config struct {
 	DataDir         string
 	SessionSecret   string // empty means: load/generate at boot
 	BootstrapEmail  string
+	// AllowedEmails gates /login: only existing users can request a
+	// magic link. The bootstrap step pre-creates a row for each entry
+	// here so the first login attempt finds them. Trip-member invites
+	// from existing users still create new rows independently.
+	// Empty slice = open signup (legacy behaviour).
+	AllowedEmails   []string
 	SMTP            SMTP
 }
 
@@ -33,6 +40,7 @@ func Load(getenv func(string) string) (Config, error) {
 		DataDir:         or(getenv("DATA_DIR"), "/data"),
 		SessionSecret:   getenv("SESSION_SECRET"),
 		BootstrapEmail:  getenv("BOOTSTRAP_EMAIL"),
+		AllowedEmails:   parseEmailList(getenv("ALLOWED_EMAILS")),
 		SMTP: SMTP{
 			Host: getenv("SMTP_HOST"),
 			Port: or(getenv("SMTP_PORT"), "587"),
@@ -59,4 +67,21 @@ func or(v, fallback string) string {
 		return fallback
 	}
 	return v
+}
+
+// parseEmailList splits a comma-separated env value, trims whitespace,
+// lowercases, and drops empties.
+func parseEmailList(v string) []string {
+	if v == "" {
+		return nil
+	}
+	parts := strings.Split(v, ",")
+	out := make([]string, 0, len(parts))
+	for _, p := range parts {
+		e := strings.ToLower(strings.TrimSpace(p))
+		if e != "" {
+			out = append(out, e)
+		}
+	}
+	return out
 }

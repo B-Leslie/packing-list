@@ -57,25 +57,40 @@ func newTestServer(t *testing.T) *Server {
 	return s
 }
 
-func TestPostLoginCreatesUserAndShowsSentPage(t *testing.T) {
-	s := newTestServer(t)
-	form := strings.NewReader("email=alice@example.com&csrf_token=t")
+func postLoginRequest(email string) *http.Request {
+	form := strings.NewReader("email=" + email + "&csrf_token=t")
 	r := httptest.NewRequest("POST", "/login", form)
 	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	r.AddCookie(&http.Cookie{Name: auth.CSRFCookieName, Value: "t"})
 	r.Header.Set(auth.CSRFHeaderName, "t")
+	return r
+}
+
+func TestPostLoginExistingUserShowsSentPage(t *testing.T) {
+	s := newTestServer(t)
+	if _, _, err := s.Users.FindOrCreate(context.Background(), "alice@example.com"); err != nil {
+		t.Fatalf("seed: %v", err)
+	}
 	w := httptest.NewRecorder()
-	s.Handler().ServeHTTP(w, r)
+	s.Handler().ServeHTTP(w, postLoginRequest("alice@example.com"))
 	body := w.Body.String()
 	if !strings.Contains(body, "Check your inbox") {
 		t.Errorf("expected login_sent page, got: %s", body)
 	}
-	_, created, err := s.Users.FindOrCreate(context.Background(), "alice@example.com")
-	if err != nil {
-		t.Fatalf("find: %v", err)
+}
+
+// Anti-enumeration: response for an unknown email must be
+// indistinguishable from the existing-user response.
+func TestPostLoginUnknownEmailStillShowsSentPage(t *testing.T) {
+	s := newTestServer(t)
+	w := httptest.NewRecorder()
+	s.Handler().ServeHTTP(w, postLoginRequest("stranger@example.com"))
+	body := w.Body.String()
+	if !strings.Contains(body, "Check your inbox") {
+		t.Errorf("expected login_sent page for unknown email, got: %s", body)
 	}
-	if created {
-		t.Error("expected user already created by login")
+	if _, found, err := s.Users.Find(context.Background(), "stranger@example.com"); err != nil || found {
+		t.Errorf("unknown email must not be auto-created: found=%v err=%v", found, err)
 	}
 }
 
