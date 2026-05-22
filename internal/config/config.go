@@ -8,11 +8,14 @@ import (
 )
 
 type SMTP struct {
-	Host string
-	Port string
-	User string
-	Pass string
-	From string
+	Host     string
+	Port     string
+	User     string
+	Pass     string
+	From     string
+	// Insecure skips STARTTLS, for LAN-internal relays whose certs don't
+	// match their hostname (e.g. boky/postfix's default CN=localhost).
+	Insecure bool
 }
 
 func (s SMTP) Configured() bool { return s.Host != "" }
@@ -42,11 +45,12 @@ func Load(getenv func(string) string) (Config, error) {
 		BootstrapEmail:  getenv("BOOTSTRAP_EMAIL"),
 		AllowedEmails:   parseEmailList(getenv("ALLOWED_EMAILS")),
 		SMTP: SMTP{
-			Host: getenv("SMTP_HOST"),
-			Port: or(getenv("SMTP_PORT"), "587"),
-			User: getenv("SMTP_USER"),
-			Pass: getenv("SMTP_PASS"),
-			From: getenv("SMTP_FROM"),
+			Host:     getenv("SMTP_HOST"),
+			Port:     or(getenv("SMTP_PORT"), "587"),
+			User:     getenv("SMTP_USER"),
+			Pass:     getenv("SMTP_PASS"),
+			From:     getenv("SMTP_FROM"),
+			Insecure: strings.EqualFold(getenv("SMTP_INSECURE"), "true"),
 		},
 	}
 	if c.BaseURL == "" {
